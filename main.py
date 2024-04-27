@@ -1,5 +1,6 @@
 import pygame
 import sys
+from l_algorithms import dfs, bfs
 
 # Initialize Pygame
 pygame.init()
@@ -42,6 +43,8 @@ squares = [{'row': row, 'col': col, 'color_index': 4} for row in range(ROWS) for
 # Load the font
 font = pygame.font.SysFont(None, 30)
 
+start_simulation_check = False
+
 # Function to draw the grid
 def draw_grid(screen):
     # Draw vertical lines
@@ -68,9 +71,40 @@ def save_square(row, col, color_index):
     squares.append({'row': row, 'col': col, 'color_index': color_index})  # Add the new square
     grid_state[row][col] = True
 
+# Starts simulation function
+def start_simulation(chosen_algorithm):
+    global start_simulation_check
+    print(f"Starting simulation: {chosen_algorithm}")
+    start_simulation_check = True
+    print(get_board())
+    if chosen_algorithm == "BFS":
+        bfs()
+    else:
+        dfs()
+    # TODO: IMPLEMENT THE REST OF THE CODE LOGIC HAVING IT UPDATE THE BOARD AFTER EACH STATE CHANGE
+
+def get_board():
+    board = [['.' for _ in range(COLS)] for _ in range(ROWS)]
+
+    for square in squares:
+        row = square['row']
+        col = square['col']
+        color_index = square['color_index']
+
+        if color_index == 0:
+            board[row][col] = '#'  # Walls represented by #
+        elif color_index == 1:
+            board[row][col] = 'S'  # Start Point represented by S
+        elif color_index == 2:
+            board[row][col] = 'E'  # End Point represented by E
+
+    return board
+
 # Main function
 def main():
     global squares
+    global start_simulation_check
+
     screen = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
     pygame.display.set_caption("DFS and BFS Visualizer")
     original_background = screen.copy()  # Store the original background
@@ -82,15 +116,24 @@ def main():
     # Initialize the selected color index
     selected_color_index = 0  # Default to dark gray
     selected_color_controls_index = 4  # Default to DFS
-    selected_algorithm = None
+    selected_algorithm = "DFS"
 
     running = True
     drawing = False
+
+    # Adjust the position of the DFS and BFS buttons
+    BUTTON_AREA[4] = (PADDING_X + GRID_SIZE + BUTTON_PADDING, PADDING_Y + BUTTON_PADDING + 4 * (BUTTON_SIZE + BUTTON_PADDING) + 40,
+                      BUTTON_SIZE, BUTTON_SIZE)
+    BUTTON_AREA[5] = (PADDING_X + GRID_SIZE + BUTTON_PADDING, PADDING_Y + BUTTON_PADDING + 5 * (BUTTON_SIZE + BUTTON_PADDING) + 40,
+                      BUTTON_SIZE, BUTTON_SIZE)
+    BUTTON_AREA[6] = (PADDING_X + GRID_SIZE + BUTTON_PADDING, PADDING_Y + BUTTON_PADDING + 6 * (BUTTON_SIZE + BUTTON_PADDING) + 40,
+                      BUTTON_SIZE, BUTTON_SIZE)
+
     while running:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
-            elif event.type == pygame.MOUSEBUTTONDOWN:
+            elif event.type == pygame.MOUSEBUTTONDOWN and not start_simulation_check:
                 mouse_x, mouse_y = pygame.mouse.get_pos()
                 # Check button clicks
                 for i, button_area in enumerate(BUTTON_AREA):
@@ -99,10 +142,11 @@ def main():
                         if i < len(BUTTON_FUNCTIONALITY) - 1 and BUTTON_FUNCTIONALITY[i] != "DFS" and BUTTON_FUNCTIONALITY[i] != "BFS":
                             selected_color_index = i  # Update the selected color index
                         else:
-                            if selected_algorithm is not None:
-                                print(selected_algorithm)
-                            else:
-                                print("No algorithm selected")
+                            if selected_algorithm is not None and BUTTON_FUNCTIONALITY[i] == "Start Simulation":
+                                if sum(1 for square in squares if square['color_index'] == 1) == 1 and sum(1 for square in squares if square['color_index'] == 2) == 1:
+                                    start_simulation(selected_algorithm)
+                                else:
+                                    print("You must place at least one Start and End point")
                         if BUTTON_FUNCTIONALITY[i] == "DFS" or BUTTON_FUNCTIONALITY[i] == "BFS":
                             selected_algorithm = BUTTON_FUNCTIONALITY[i]
                             selected_color_controls_index = i
@@ -124,9 +168,9 @@ def main():
                                 fill_square(screen, row, col, button_colors[color_index])
                                 grid_state[row][col] = True
                                 save_square(row, col, color_index)
-            elif event.type == pygame.MOUSEBUTTONUP:
+            elif event.type == pygame.MOUSEBUTTONUP and not start_simulation_check:
                 drawing = False
-            elif event.type == pygame.MOUSEMOTION and drawing:
+            elif event.type == pygame.MOUSEMOTION and drawing and not start_simulation_check:
                 mouse_x, mouse_y = pygame.mouse.get_pos()
                 if PADDING_X < mouse_x < PADDING_X + GRID_SIZE and PADDING_Y < mouse_y < PADDING_Y + GRID_SIZE:
                     col = (mouse_x - PADDING_X) // SQUARE_SIZE
@@ -188,6 +232,13 @@ def main():
                 text_rect = text.get_rect(
                     midleft=(button_area[0] + button_area[2] + 10, button_area[1] + button_area[3] // 2))
                 screen.blit(text, text_rect)
+
+            # Draw additional horizontal line to separate buttons
+            line_y = PADDING_Y + BUTTON_SIZE * 4 + BUTTON_PADDING * 5 + 10  # Adjusted y-coordinate
+            line_start_x = PADDING_X + GRID_SIZE + BUTTON_PADDING
+            line_end_x = PADDING_X + GRID_SIZE + BUTTON_PADDING * 11 + BUTTON_SIZE  # Adjusted x-coordinate
+            pygame.draw.line(screen, GRID_COLOR, (line_start_x, line_y),
+                             (line_end_x, line_y), width=5)  # Thicker line
 
         # Check if mouse is over a button and change cursor accordingly
         for button_area in BUTTON_AREA:
