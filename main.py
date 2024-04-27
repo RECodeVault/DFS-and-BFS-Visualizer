@@ -1,6 +1,8 @@
 import pygame
 import sys
 from l_algorithms import dfs, bfs
+from board import Board
+import time
 
 # Initialize Pygame
 pygame.init()
@@ -72,33 +74,32 @@ def save_square(row, col, color_index):
     grid_state[row][col] = True
 
 # Starts simulation function
-def start_simulation(chosen_algorithm):
+def start_simulation(chosen_algorithm, screen, button_colors):
     global start_simulation_check
     print(f"Starting simulation: {chosen_algorithm}")
     start_simulation_check = True
-    print(get_board())
+    board = Board(10, 10, squares)
+    grid, start_point, end_point = board.get_board_and_pos()
     if chosen_algorithm == "BFS":
-        bfs()
+        new_board = bfs(grid, start_point, end_point, squares)
+        updated_board, _, _ = new_board.get_board_and_pos()
+        for row_index, row in enumerate(updated_board):
+            for col_index, value in enumerate(row):
+                if value == 'V':
+                    for square in squares:
+                        if square['row'] == row_index and square['col'] == col_index and square['color_index'] == 4:
+                            square['color_index'] = 5
+        # 1. KINDA WORKS BUT GOES FROM TOP TO BOTTOM AND IT NEEDS TO SHOW FROM WHERE THE DIRECTION IS
+        # (NEEDS TO GET A STATE OF THE BOARD AFTER EACH UPDATE)
+        # 2. OVERWRITES THE START AND END POINT WHEN IT SHOULDNT NEED TO FIX
+        for square in squares:
+            if square['color_index'] == 5:
+                fill_square(screen, square['row'], square['col'], button_colors[square['color_index']])
+                draw_grid(screen)
+                time.sleep(0.5)
+                pygame.display.flip()
     else:
         dfs()
-    # TODO: IMPLEMENT THE REST OF THE CODE LOGIC HAVING IT UPDATE THE BOARD AFTER EACH STATE CHANGE
-
-def get_board():
-    board = [['.' for _ in range(COLS)] for _ in range(ROWS)]
-
-    for square in squares:
-        row = square['row']
-        col = square['col']
-        color_index = square['color_index']
-
-        if color_index == 0:
-            board[row][col] = '#'  # Walls represented by #
-        elif color_index == 1:
-            board[row][col] = 'S'  # Start Point represented by S
-        elif color_index == 2:
-            board[row][col] = 'E'  # End Point represented by E
-
-    return board
 
 # Main function
 def main():
@@ -144,7 +145,7 @@ def main():
                         else:
                             if selected_algorithm is not None and BUTTON_FUNCTIONALITY[i] == "Start Simulation":
                                 if sum(1 for square in squares if square['color_index'] == 1) == 1 and sum(1 for square in squares if square['color_index'] == 2) == 1:
-                                    start_simulation(selected_algorithm)
+                                    start_simulation(selected_algorithm, screen, button_colors)
                                 else:
                                     print("You must place at least one Start and End point")
                         if BUTTON_FUNCTIONALITY[i] == "DFS" or BUTTON_FUNCTIONALITY[i] == "BFS":
