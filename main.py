@@ -1,10 +1,13 @@
 import pygame
 import sys
+
+import constants
 from l_algorithms import dfs, bfs
 from board import Board
 import time
 from mazes import mazes
 import random
+from constants import Constants
 
 # Initialize Pygame
 pygame.init()
@@ -39,7 +42,7 @@ BUTTON_CONTROL_COLORS = [(255, 255, 255), (255, 255, 255), (255, 255, 255), (255
 BUTTON_FUNCTIONALITY = ["Walls", "Start Point", "End Point", "Erase", "DFS", "BFS", "Start Simulation", "Random Maze", "Reset"]
 
 # 2D list to track the state of each square (True for filled, False for empty)
-grid_state = [[False for _ in range(COLS)] for _ in range(ROWS)]
+grid_state = [[False for _ in range(constants.Constants.COLS)] for _ in range(constants.Constants.ROWS)]
 
 # List to store square properties
 squares = [{'row': row, 'col': col, 'color_index': 4} for row in range(ROWS) for col in range(COLS)]
@@ -53,6 +56,7 @@ simulation_finished = False
 
 dist = 0
 
+
 # Function to draw the grid
 def draw_grid(screen):
     # Draw vertical lines
@@ -62,9 +66,11 @@ def draw_grid(screen):
     for y in range(PADDING_Y, PADDING_Y + GRID_SIZE + 1, SQUARE_SIZE):
         pygame.draw.line(screen, GRID_COLOR, (PADDING_X, y), (PADDING_X + GRID_SIZE, y))
 
+
 # Function to fill a square with color
 def fill_square(screen, row, col, color):
     pygame.draw.rect(screen, color, (PADDING_X + col * SQUARE_SIZE, PADDING_Y + row * SQUARE_SIZE, SQUARE_SIZE, SQUARE_SIZE))
+
 
 # Function to save square properties
 def save_square(row, col, color_index):
@@ -78,6 +84,7 @@ def save_square(row, col, color_index):
             grid_state[square['row']][square['col']] = False  # Set grid_state to False for the removed green square
     squares.append({'row': row, 'col': col, 'color_index': color_index})  # Add the new square
     grid_state[row][col] = True
+
 
 def simulate_moves(updated_board, simulation_queue, screen, button_colors):
     # Show text info
@@ -107,6 +114,7 @@ def simulate_moves(updated_board, simulation_queue, screen, button_colors):
                     time.sleep(0.2)
                     pygame.display.flip()
 
+
 # Starts simulation function
 def start_simulation(chosen_algorithm, screen, button_colors):
     global start_simulation_check
@@ -124,6 +132,7 @@ def start_simulation(chosen_algorithm, screen, button_colors):
         updated_board, _, _ = new_board.get_board_and_pos()
         simulate_moves(updated_board, simulation_queue, screen, button_colors)
     simulation_finished = True
+
 
 def load_random_maze(squares, screen, button_colors, grid_state):
     # Reset grid_state list to False
@@ -150,6 +159,7 @@ def load_random_maze(squares, screen, button_colors, grid_state):
         draw_grid(screen)
         pygame.display.flip()
 
+
 def reset(grid_state, squares, screen, button_colors):
     global start_simulation_check
     global simulation_finished
@@ -174,6 +184,14 @@ def reset(grid_state, squares, screen, button_colors):
         fill_square(screen, square['row'], square['col'], button_colors[square['color_index']])
         draw_grid(screen)
         pygame.display.flip()
+
+def draw_line(y_constant, x_constant_end, x_constant_start, screen):
+    # Draw additional horizontal line to separate other buttons
+    line_y1 = PADDING_Y + BUTTON_SIZE * 4 + BUTTON_PADDING * 5 + y_constant
+    line_start_x1 = PADDING_X + GRID_SIZE + BUTTON_PADDING + x_constant_start
+    line_end_x1 = PADDING_X + GRID_SIZE + BUTTON_PADDING * 11 + BUTTON_SIZE + x_constant_end
+    pygame.draw.line(screen, GRID_COLOR, (line_start_x1, line_y1),
+                     (line_end_x1, line_y1), width=5)
 
 
 # Main function
@@ -218,7 +236,7 @@ def main():
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
-            # Unlocking only the reset button after simulation complete
+            # Unlocking only the reset button after simulation is complete
             elif event.type == pygame.MOUSEBUTTONDOWN and simulation_finished:
                 mouse_x, mouse_y = pygame.mouse.get_pos()
                 # Check button clicks
@@ -309,26 +327,14 @@ def main():
             # Render text onto the buttons
             if i < len(BUTTON_FUNCTIONALITY):
                 text = None
-                if i == 0:
-                    text = font.render("Walls - inf", True, (255, 255, 255))
-                elif i == 1:  # If it is start point
+                if i == 1:  # If it is start point
                     red_tiles_placed = sum(1 for square in squares if square['color_index'] == 1)
                     text = font.render(f"Start Point - {str(1 - red_tiles_placed)}", True, (255, 255, 255))
                 elif i == 2:  # If it is end point
                     green_tiles_placed = sum(1 for square in squares if square['color_index'] == 2)
                     text = font.render(f"End Point - {str(1 - green_tiles_placed)}", True, (255, 255, 255))
-                elif i == 3:
-                    text = font.render("Erase", True, (255, 255, 255))  # Render text with white color
-                elif i == 4:
-                    text = font.render("DFS", True, (255, 255, 255))
-                elif i == 5:
-                    text = font.render("BFS", True, (255, 255, 255))
-                elif i == 6:
-                    text = font.render("Start Simulation", True, (255, 255, 255))
-                elif i == 7:
-                    text = font.render("Random Maze", True, (255, 255, 255))
                 else:
-                    text = font.render("Reset", True, (255, 255, 255))
+                    text = font.render(BUTTON_FUNCTIONALITY[i], True, (255, 255, 255))
                 text_rect = text.get_rect(
                     midleft=(button_area[0] + button_area[2] + 10, button_area[1] + button_area[3] // 2))
                 screen.blit(text, text_rect)
@@ -338,10 +344,7 @@ def main():
             text_rect = chosen_algorithm.get_rect(midleft=(55, WINDOW_HEIGHT // 2 - 100))
             screen.blit(chosen_algorithm, text_rect)
 
-            if selected_algorithm == "DFS":
-                algorithm_text = font.render("DFS", True, (255, 255, 255))
-            else:
-                algorithm_text = font.render("BFS", True, (255, 255, 255))
+            algorithm_text = font.render(selected_algorithm, True, (255, 255, 255))
             text_rect = algorithm_text.get_rect(midleft=(120, WINDOW_HEIGHT // 2 - 60))
             screen.blit(algorithm_text, text_rect)
 
@@ -354,26 +357,10 @@ def main():
                 text_rect = result_text.get_rect(midleft=(35, WINDOW_HEIGHT // 2 + 20))
                 screen.blit(result_text, text_rect)
 
-            # Draw additional horizontal line to separate buttons
-            line_y = PADDING_Y + BUTTON_SIZE * 4 + BUTTON_PADDING * 5 + 10  # Adjusted y-coordinate
-            line_start_x = PADDING_X + GRID_SIZE + BUTTON_PADDING
-            line_end_x = PADDING_X + GRID_SIZE + BUTTON_PADDING * 11 + BUTTON_SIZE  # Adjusted x-coordinate
-            pygame.draw.line(screen, GRID_COLOR, (line_start_x, line_y),
-                             (line_end_x, line_y), width=5)  # Thicker line
-
-            # Draw additional horizontal line to separate other buttons
-            line_y1 = PADDING_Y + BUTTON_SIZE * 4 + BUTTON_PADDING * 5 - 130  # Adjusted y-coordinate
-            line_start_x1 = PADDING_X + GRID_SIZE + BUTTON_PADDING - 895
-            line_end_x1 = PADDING_X + GRID_SIZE + BUTTON_PADDING * 11 + BUTTON_SIZE - 900  # Adjusted x-coordinate
-            pygame.draw.line(screen, GRID_COLOR, (line_start_x1, line_y1),
-                             (line_end_x1, line_y1), width=5)  # Thicker line
-
-            # Draw additional horizontal line to separate other buttons
-            line_y2 = PADDING_Y + BUTTON_SIZE * 4 + BUTTON_PADDING * 5 - 35  # Adjusted y-coordinate
-            line_start_x2 = PADDING_X + GRID_SIZE + BUTTON_PADDING - 895
-            line_end_x2 = PADDING_X + GRID_SIZE + BUTTON_PADDING * 11 + BUTTON_SIZE - 900  # Adjusted x-coordinate
-            pygame.draw.line(screen, GRID_COLOR, (line_start_x2, line_y2),
-                             (line_end_x2, line_y2), width=5)  # Thicker line
+            # Draws lines to separate buttons
+            draw_line(10, 0, 0, screen)
+            draw_line(-130, -900, -895, screen)
+            draw_line(-35, -895, -900, screen)
 
         # Check if mouse is over a button and change cursor accordingly
         for button_area in BUTTON_AREA:
@@ -387,6 +374,7 @@ def main():
 
     pygame.quit()
     sys.exit()
+
 
 if __name__ == "__main__":
     main()

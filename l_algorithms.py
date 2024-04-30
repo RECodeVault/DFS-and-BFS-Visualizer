@@ -1,11 +1,13 @@
 from collections import deque
 from board import Board
 
+
 def is_valid_move(grid, visited, row, col):
     rows = len(grid)
     cols = len(grid[0])
 
     return 0 <= row < rows and 0 <= col < cols and not visited[row][col] and grid[row][col] != "#"
+
 
 def bfs(grid, start_point, end_point, squares):
     rows = len(grid)
@@ -42,6 +44,7 @@ def bfs(grid, start_point, end_point, squares):
 
     return -1
 
+
 def dfs(grid, start_point, end_point, squares):
     rows = len(grid)
     cols = len(grid[0])
@@ -53,8 +56,8 @@ def dfs(grid, start_point, end_point, squares):
     new_board = Board(10, 10, squares)
 
     while stack:
-        current = stack[-1]  # pop instead of using stack[-1]
-        row, col, dist = current  # Unpack row, col, and distance
+        current = stack[-1]
+        row, col, dist = current
         if (row, col) == end_point:
             return move_queue, new_board, dist
 
@@ -64,7 +67,7 @@ def dfs(grid, start_point, end_point, squares):
             new_row = row + move[0]
             new_col = col + move[1]
             if is_valid_move(grid, visited, new_row, new_col):
-                stack.append((new_row, new_col, dist + 1))  # Increment distance
+                stack.append((new_row, new_col, dist + 1))
                 visited[new_row][new_col] = True
                 found_next_move = True
                 move_queue.append((new_row, new_col))
@@ -75,4 +78,3 @@ def dfs(grid, start_point, end_point, squares):
             stack.pop()
 
     return -1
-
