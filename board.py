@@ -1,3 +1,5 @@
+from mazes import mazes
+
 class Board:
     def __init__(self, cols, rows, squares):
         self.board = [['.' for _ in range(cols)] for _ in range(rows)]
@@ -18,6 +20,9 @@ class Board:
             elif color_index == 2:
                 self.board[row][col] = 'E'  # End Point represented by E
                 self.end_point = (row, col)
+
+    def create_random_board(self):
+        self.board = mazes['Maze 1']  # NEEDS TO BE RANDOM MAZE
 
     def get_board_and_pos(self):
         return self.board, self.start_point, self.end_point
