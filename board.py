@@ -1,5 +1,11 @@
 class Board:
     def __init__(self, cols, rows, squares):
+        """
+        Board constructor
+        :param cols: Columns
+        :param rows: Rows
+        :param squares: List of squares
+        """
         self.board = [['.' for _ in range(cols)] for _ in range(rows)]
 
         self.start_point = None
@@ -19,10 +25,26 @@ class Board:
                 self.board[row][col] = 'E'  # End Point represented by E
                 self.end_point = (row, col)
 
-    def get_board_and_pos(self):
-        return self.board, self.start_point, self.end_point
+    def get_pos(self):
+        """
+        Gets the start and end point of the board
+        :return: start_point, end_point
+        """
+        return self.start_point, self.end_point
+
+    def get_board(self):
+        """
+        Gets the board
+        :return: board
+        """
+        return self.board
 
     def update_board(self, visited):
+        """
+        Updates the board
+        :param visited: List of visited cells
+        :return: None
+        """
         rows = len(self.board)
         cols = len(self.board[0])
 
