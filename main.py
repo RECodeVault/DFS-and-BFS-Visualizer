@@ -111,6 +111,7 @@ def simulate_moves(updated_board, simulation_queue, screen, button_colors):
             for square in squares:
                 if square['row'] == row and square['col'] == col and square['color_index'] == 4:
                     square['color_index'] = 5
+
                 if square['row'] == row and square['col'] == col and square['color_index'] == 5:
                     moves_text = font.render(f"({square['row']}, {square['col']})", True, (255, 255, 255))
                     screen.fill((0, 0, 0), text_rect)
@@ -136,14 +137,14 @@ def start_simulation(chosen_algorithm, screen, button_colors):
     board = Board(10, 10, squares)
     start_point, end_point = board.get_pos()
     grid = board.get_board()
+
     if chosen_algorithm == "BFS":
         simulation_queue, new_board, dist = bfs(grid, start_point, end_point, squares)
-        updated_board = new_board.get_board()
-        simulate_moves(updated_board, simulation_queue, screen, button_colors)
     else:
         simulation_queue, new_board, dist = dfs(grid, start_point, end_point, squares)
-        updated_board = new_board.get_board()
-        simulate_moves(updated_board, simulation_queue, screen, button_colors)
+
+    updated_board = new_board.get_board()
+    simulate_moves(updated_board, simulation_queue, screen, button_colors)
     simulation_finished = True
 
 
@@ -176,6 +177,7 @@ def load_random_maze(squares, screen, button_colors, grid_state):
     for row in chosen_maze:
         for col in row:
             save_square(col['row'], col['col'], col['color_index'])
+
     # Fill squares
     for square in squares:
         fill_square(screen, square['row'], square['col'], button_colors[square['color_index']])
@@ -210,6 +212,7 @@ def reset(grid_state, squares, screen, button_colors):
         for col in range(10):
             square = {'row': row, 'col': col, 'color_index': 4}
             squares.append(square)
+
     # Reset visual on board
     for square in squares:
         fill_square(screen, square['row'], square['col'], button_colors[square['color_index']])
@@ -251,14 +254,25 @@ def main():
                 for i, button_area in enumerate(constants.BUTTON_AREA):
                     if button_area[0] < mouse_x < button_area[0] + button_area[2] and \
                             button_area[1] < mouse_y < button_area[1] + button_area[3]:
-                        if constants.BUTTON_FUNCTIONALITY[i] == "Reset" and simulation_finished:
+                        if constants.BUTTON_FUNCTIONALITY[i] == "Reset":
                             reset(grid_state, squares, screen, button_colors)
+
             elif event.type == pygame.MOUSEBUTTONDOWN and not start_simulation_check:
                 mouse_x, mouse_y = pygame.mouse.get_pos()
                 # Check button clicks
                 for i, button_area in enumerate(constants.BUTTON_AREA):
                     if button_area[0] < mouse_x < button_area[0] + button_area[2] and \
                             button_area[1] < mouse_y < button_area[1] + button_area[3]:
+                        # Checks for if functionality buttons are pressed
+                        if constants.BUTTON_FUNCTIONALITY[i] in ["DFS", "BFS"]:
+                            selected_algorithm = constants.BUTTON_FUNCTIONALITY[i]
+                            selected_color_controls_index = i
+                        elif constants.BUTTON_FUNCTIONALITY[i] == "Random Maze":
+                            load_random_maze(squares, screen, button_colors, grid_state)
+                        elif constants.BUTTON_FUNCTIONALITY[i] == "Reset":
+                            reset(grid_state, squares, screen, button_colors)
+
+                        # Checks for if one of the algorithms and the start simulation button is pressed
                         if i < len(constants.BUTTON_FUNCTIONALITY) - 3 and constants.BUTTON_FUNCTIONALITY[i] not in ["DFS", "BFS"]:
                             selected_color_index = i  # Update the selected color index
                         else:
@@ -267,11 +281,7 @@ def main():
                                     start_simulation(selected_algorithm, screen, button_colors)
                                 else:
                                     print("You must place at least one Start and End point")
-                        if constants.BUTTON_FUNCTIONALITY[i] in ["DFS", "BFS"]:
-                            selected_algorithm = constants.BUTTON_FUNCTIONALITY[i]
-                            selected_color_controls_index = i
-                        if constants.BUTTON_FUNCTIONALITY[i] == "Random Maze":
-                            load_random_maze(squares, screen, button_colors, grid_state)
+
                 # Check if the left mouse button is pressed down while over the grid
                 if event.button == 1 and constants.PADDING_X < mouse_x < constants.PADDING_X + constants.GRID_SIZE and \
                         constants.PADDING_Y < mouse_y < constants.PADDING_Y + constants.GRID_SIZE:
@@ -291,8 +301,11 @@ def main():
                                 fill_square(screen, row, col, button_colors[color_index])
                                 grid_state[row][col] = True
                                 save_square(row, col, color_index)
+
+            # Checks for if the mouse is released
             elif event.type == pygame.MOUSEBUTTONUP and not start_simulation_check:
                 drawing = False
+            # Checks for dragging motion of mouse
             elif event.type == pygame.MOUSEMOTION and drawing and not start_simulation_check:
                 mouse_x, mouse_y = pygame.mouse.get_pos()
                 if constants.PADDING_X < mouse_x < constants.PADDING_X + constants.GRID_SIZE and \
@@ -330,10 +343,12 @@ def main():
                 pygame.draw.rect(screen, constants.SELECTED_OUTLINE_COLOR, button_area, 3)  # Draw selected outline
             else:
                 pygame.draw.rect(screen, constants.OUTLINE_COLOR, button_area, 3)  # Draw white outline
+            # Draw buttons for drawing and control buttons
             if i < 4:
                 pygame.draw.rect(screen, button_color, button_area, border_radius=15)
             else:
                 pygame.draw.rect(screen, button_control_color, button_area, border_radius=15)
+
             # Render text onto the buttons
             if i < len(constants.BUTTON_FUNCTIONALITY):
                 if i == 1:  # If it is start point
@@ -344,6 +359,7 @@ def main():
                     text = font.render(f"End Point - {str(1 - green_tiles_placed)}", True, (255, 255, 255))
                 else:
                     text = font.render(constants.BUTTON_FUNCTIONALITY[i], True, (255, 255, 255))
+
                 text_rect = text.get_rect(
                     midleft=(button_area[0] + button_area[2] + 10, button_area[1] + button_area[3] // 2))
                 screen.blit(text, text_rect)
@@ -362,7 +378,10 @@ def main():
                 text_rect = result.get_rect(midleft=(100, constants.WINDOW_HEIGHT // 2 - 10))
                 screen.blit(result, text_rect)
 
-                result_text = font.render(f"{dist} moves to destination", True, (255, 255, 255))
+                if dist > 0:
+                    result_text = font.render(f"{dist} moves to destination", True, (255, 255, 255))
+                else:
+                    result_text = font.render(f"End point is unreachable", True, (255, 255, 255))
                 text_rect = result_text.get_rect(midleft=(35, constants.WINDOW_HEIGHT // 2 + 20))
                 screen.blit(result_text, text_rect)
 

@@ -49,7 +49,6 @@ def bfs(board, start_point, end_point, squares):
 
         for dr, dc in directions:
             new_row, new_col = row + dr, col + dc
-
             # Check if the new cell is a valid move
             if is_valid_move(board, visited, new_row, new_col):
                 # Mark the new cell as visited and add it to the queue
@@ -58,7 +57,7 @@ def bfs(board, start_point, end_point, squares):
                 move_queue.append((new_row, new_col))
                 new_board.update_board(visited)
 
-    return -1
+    return move_queue, new_board, -1
 
 
 def dfs(board, start_point, end_point, squares):
@@ -87,6 +86,7 @@ def dfs(board, start_point, end_point, squares):
 
         moves = [(0, 1), (0, -1), (1, 0), (-1, 0)]
         found_next_move = False
+
         for move in moves:
             new_row = row + move[0]
             new_col = col + move[1]
@@ -101,4 +101,4 @@ def dfs(board, start_point, end_point, squares):
         if not found_next_move:
             stack.pop()
 
-    return -1
+    return move_queue, new_board, -1
