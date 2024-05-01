@@ -77,7 +77,6 @@ def save_square(row, col, color_index):
     :param color_index: Chosen color
     :return: None
     """
-    global squares
     for square in squares[:]:  # Iterate over a copy of squares to avoid modifying it while iterating
         if square['color_index'] == 1 and color_index == 1:  # If the square is red and the new one is also red
             squares.remove(square)  # Remove the existing red square
@@ -107,15 +106,11 @@ def simulate_moves(updated_board, simulation_queue, screen, button_colors):
     text_rect = moves_text.get_rect(midleft=(110, constants.WINDOW_HEIGHT // 2 + 20))
     screen.blit(moves_text, text_rect)
 
-    for row_index, row in enumerate(updated_board):
-        for col_index, value in enumerate(row):
-            if value == 'V':
-                for square in squares:
-                    if square['row'] == row_index and square['col'] == col_index and square['color_index'] == 4:
-                        square['color_index'] = 5
     for row, col in simulation_queue:
         if updated_board[row][col] == 'V':
             for square in squares:
+                if square['row'] == row and square['col'] == col and square['color_index'] == 4:
+                    square['color_index'] = 5
                 if square['row'] == row and square['col'] == col and square['color_index'] == 5:
                     moves_text = font.render(f"({square['row']}, {square['col']})", True, (255, 255, 255))
                     screen.fill((0, 0, 0), text_rect)
@@ -135,9 +130,8 @@ def start_simulation(chosen_algorithm, screen, button_colors):
     :param button_colors: Chosen color
     :return: None
     """
-    global start_simulation_check
-    global simulation_finished
-    global dist
+    global start_simulation_check, simulation_finished, dist
+
     start_simulation_check = True
     board = Board(10, 10, squares)
     start_point, end_point = board.get_pos()
@@ -177,10 +171,12 @@ def load_random_maze(squares, screen, button_colors, grid_state):
         pygame.display.flip()
 
     chosen_maze = mazes["Maze " + str(random.randint(1, len(mazes)))]
+
+    # Save information from the chosen maze to the squares list
     for row in chosen_maze:
         for col in row:
-            color_index = col['color_index']
-            save_square(col['row'], col['col'], color_index)
+            save_square(col['row'], col['col'], col['color_index'])
+    # Fill squares
     for square in squares:
         fill_square(screen, square['row'], square['col'], button_colors[square['color_index']])
         draw_grid(screen)
@@ -196,8 +192,7 @@ def reset(grid_state, squares, screen, button_colors):
     :param button_colors: Chosen color
     :return: None
     """
-    global start_simulation_check
-    global simulation_finished
+    global start_simulation_check, simulation_finished
 
     start_simulation_check = False
     simulation_finished = False
@@ -210,11 +205,12 @@ def reset(grid_state, squares, screen, button_colors):
     # Reset squares list
     squares.clear()
 
+    # Reset all squares back to its original state
     for row in range(10):
         for col in range(10):
             square = {'row': row, 'col': col, 'color_index': 4}
             squares.append(square)
-
+    # Reset visual on board
     for square in squares:
         fill_square(screen, square['row'], square['col'], button_colors[square['color_index']])
         draw_grid(screen)
@@ -226,9 +222,7 @@ def main():
     Main function that does most of the work
     :return: None
     """
-    global squares
-    global start_simulation_check
-    global simulation_finished
+    global squares, start_simulation_check, simulation_finished
 
     screen = pygame.display.set_mode((constants.WINDOW_WIDTH, constants.WINDOW_HEIGHT))
     pygame.display.set_caption("DFS and BFS Visualizer")
@@ -241,7 +235,7 @@ def main():
     # Initialize the selected color index
     selected_color_index = 0  # Default to dark gray
     selected_color_controls_index = 4  # Default to DFS
-    selected_algorithm = "DFS"
+    selected_algorithm = "DFS"  # Default to DFS algorithm
 
     running = True
     drawing = False
@@ -265,25 +259,26 @@ def main():
                 for i, button_area in enumerate(constants.BUTTON_AREA):
                     if button_area[0] < mouse_x < button_area[0] + button_area[2] and \
                             button_area[1] < mouse_y < button_area[1] + button_area[3]:
-                        if i < len(constants.BUTTON_FUNCTIONALITY) - 3 and constants.BUTTON_FUNCTIONALITY[i] != "DFS" and constants.BUTTON_FUNCTIONALITY[i] != "BFS":
+                        if i < len(constants.BUTTON_FUNCTIONALITY) - 3 and constants.BUTTON_FUNCTIONALITY[i] not in ["DFS", "BFS"]:
                             selected_color_index = i  # Update the selected color index
                         else:
-                            if selected_algorithm is not None and constants.BUTTON_FUNCTIONALITY[i] == "Start Simulation" and not start_simulation_check:
+                            if constants.BUTTON_FUNCTIONALITY[i] == "Start Simulation" and not start_simulation_check:
                                 if sum(1 for square in squares if square['color_index'] == 1) == 1 and sum(1 for square in squares if square['color_index'] == 2) == 1:
                                     start_simulation(selected_algorithm, screen, button_colors)
                                 else:
                                     print("You must place at least one Start and End point")
-                        if constants.BUTTON_FUNCTIONALITY[i] == "DFS" or constants.BUTTON_FUNCTIONALITY[i] == "BFS":
+                        if constants.BUTTON_FUNCTIONALITY[i] in ["DFS", "BFS"]:
                             selected_algorithm = constants.BUTTON_FUNCTIONALITY[i]
                             selected_color_controls_index = i
                         if constants.BUTTON_FUNCTIONALITY[i] == "Random Maze":
                             load_random_maze(squares, screen, button_colors, grid_state)
                 # Check if the left mouse button is pressed down while over the grid
-                if event.button == 1 and constants.PADDING_X < mouse_x < constants.PADDING_X + constants.GRID_SIZE and constants.PADDING_Y < mouse_y < constants.PADDING_Y + constants.GRID_SIZE:
+                if event.button == 1 and constants.PADDING_X < mouse_x < constants.PADDING_X + constants.GRID_SIZE and \
+                        constants.PADDING_Y < mouse_y < constants.PADDING_Y + constants.GRID_SIZE:
                     drawing = True
                     col = (mouse_x - constants.PADDING_X) // constants.SQUARE_SIZE
                     row = (mouse_y - constants.PADDING_Y) // constants.SQUARE_SIZE
-                    if 0 <= row < constants.ROWS and 0 <= col < constants.COLS and constants.BUTTON_FUNCTIONALITY[selected_color_index] != "DFS" and constants.BUTTON_FUNCTIONALITY[selected_color_index] != "BFS":
+                    if 0 <= row < constants.ROWS and 0 <= col < constants.COLS and constants.BUTTON_FUNCTIONALITY[selected_color_index] not in ["DFS", "BFS"]:
                         if constants.BUTTON_FUNCTIONALITY[selected_color_index] == "Erase":
                             squares = [square for square in squares if
                                        not (square['row'] == row and square['col'] == col)]
@@ -300,10 +295,11 @@ def main():
                 drawing = False
             elif event.type == pygame.MOUSEMOTION and drawing and not start_simulation_check:
                 mouse_x, mouse_y = pygame.mouse.get_pos()
-                if constants.PADDING_X < mouse_x < constants.PADDING_X + constants.GRID_SIZE and constants.PADDING_Y < mouse_y < constants.PADDING_Y + constants.GRID_SIZE:
+                if constants.PADDING_X < mouse_x < constants.PADDING_X + constants.GRID_SIZE and \
+                        constants.PADDING_Y < mouse_y < constants.PADDING_Y + constants.GRID_SIZE:
                     col = (mouse_x - constants.PADDING_X) // constants.SQUARE_SIZE
                     row = (mouse_y - constants.PADDING_Y) // constants.SQUARE_SIZE
-                    if 0 <= row < constants.ROWS and 0 <= col < constants.COLS and constants.BUTTON_FUNCTIONALITY[selected_color_index] != "DFS" and constants.BUTTON_FUNCTIONALITY[selected_color_index] != "BFS" and constants.BUTTON_FUNCTIONALITY[selected_color_index] != "Start Simulation":
+                    if 0 <= row < constants.ROWS and 0 <= col < constants.COLS and constants.BUTTON_FUNCTIONALITY[selected_color_index] not in ["DFS", "BFS", "Start Simulation"]:
                         if constants.BUTTON_FUNCTIONALITY[selected_color_index] == "Erase":
                             squares = [square for square in squares if
                                        not (square['row'] == row and square['col'] == col)]
