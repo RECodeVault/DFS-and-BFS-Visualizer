@@ -65,3 +65,11 @@ Breadth-First Search (BFS) is another graph traversal algorithm used to explore 
 
 ### Example of BFS:
 ![BFS diagram](https://cdn.hackr.io/uploads/posts/attachments/41Y3Tl3kaPqGDVBPKFjJ1dYYrA33iss48iMklm7h.png)
+
+# Future implementation:
+
+- Going to make it a universal graph algorithm visualizer, some of the algorithms I am going to add are:
+- Dijkstra's algorithm
+- A* algorithm
+
+- Going to add an option to read more on each of the algorithms, built into the application.
