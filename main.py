@@ -7,8 +7,8 @@ from board import Board
 import time
 from mazes import mazes
 import random
+import webbrowser
 
-# Initialize Pygame
 pygame.init()
 
 # 2D list to track the state of each square (True for filled, False for empty)
@@ -17,14 +17,138 @@ grid_state = [[False for _ in range(constants.COLS)] for _ in range(constants.RO
 # List to store square properties
 squares = [{'row': row, 'col': col, 'color_index': 4} for row in range(constants.ROWS) for col in range(constants.COLS)]
 
-# Load the font
 font = pygame.font.SysFont(None, 30)
+
+small_font = pygame.font.Font(None, 25)
 
 start_simulation_check = False
 
 simulation_finished = False
 
 dist = 0
+
+
+def render_text_with_line_breaks(text, font, max_width):
+    """
+    Renders the text with line breaks, so it can wrap and not overflow
+    :param text: text to be rendered
+    :param font: font to be rendered
+    :param max_width: max width of the text
+    :return: list of wrapped text
+    """
+    words = text.split()
+    lines = []
+    current_line = ''
+    for word in words:
+        if font.size(current_line + ' ' + word)[0] <= max_width:
+            current_line += ' ' + word if current_line else word
+        else:
+            lines.append(current_line)
+            current_line = word
+    lines.append(current_line)
+    return lines
+
+
+def open_algorithm_menu():
+    """
+    Opens the algorithm menu and renders everything on the screen
+    :return: The selected algorithm by the user
+    """
+    algorithm_selected_index = 0
+    screen = pygame.display.set_mode((constants.WINDOW_WIDTH, constants.WINDOW_HEIGHT))
+    pygame.display.set_caption("Select An Algorithm")
+    screen.fill((0, 0, 0))
+    running = True
+
+    button_rect = pygame.Rect(150, 600, 300, 50)
+    pygame.draw.rect(screen, (255, 255, 255), button_rect)
+
+    button_text = font.render("Apply", True, (0, 0, 0))
+    screen.blit(button_text, button_text.get_rect(center=button_rect.center))
+
+    pygame.draw.line(screen, (255, 255, 255), (constants.WINDOW_WIDTH // 2, 0), (constants.WINDOW_WIDTH // 2, constants.WINDOW_HEIGHT), 2)
+
+    TEXT_AREA_RECT = pygame.Rect(constants.WINDOW_WIDTH // 2, 0, constants.WINDOW_WIDTH // 2, constants.WINDOW_HEIGHT)
+
+    # Create text surfaces for "Algorithm:" and "Description:"
+    algorithm_text_surface = font.render("Select An Algorithm:", True, (255, 255, 255))
+    description_text_surface = font.render("Description:", True, (255, 255, 255))
+
+    algorithm_text_rect = algorithm_text_surface.get_rect(midtop=(constants.WINDOW_WIDTH // 4, 30))
+    description_text_rect = description_text_surface.get_rect(midtop=(3 * constants.WINDOW_WIDTH // 4, 30))
+
+    # Link Button
+    button_rect_link = pygame.Rect(constants.WINDOW_WIDTH - 450, constants.WINDOW_HEIGHT - 100, 300, 50)
+
+    pygame.display.flip()
+
+    while running:
+
+        # for loop through the event queue
+        for event in pygame.event.get():
+
+            button_text = font.render(f"{constants.BUTTON_ALGORITHMS[algorithm_selected_index]} example (Click!)",True, (0, 0, 0))
+
+            if event.type == pygame.QUIT:
+                running = False
+            elif event.type == pygame.MOUSEBUTTONDOWN:
+                mouse_pos = pygame.mouse.get_pos()
+                button_rect = pygame.Rect(150, 600, 300, 50)
+                if button_rect.collidepoint(mouse_pos):
+                    running = False
+
+                for i, button_area in enumerate(constants.BUTTON_AREA_LEFT):
+                    if button_area[0] <= event.pos[0] <= button_area[0] + button_area[2] \
+                            and button_area[1] <= event.pos[1] <= button_area[1] + button_area[3]:
+                        algorithm_selected_index = i
+
+                if button_rect_link.collidepoint(mouse_pos):
+                    if algorithm_selected_index == 0:
+                        webbrowser.open("https://www.youtube.com/watch?v=Urx87-NMm6c")
+                    elif algorithm_selected_index == 1:
+                        webbrowser.open("https://www.youtube.com/watch?v=HZ5YTanv5QE")
+
+        # Draw buttons
+        for i, (button_area, button_control_color) in enumerate(zip(constants.BUTTON_AREA_LEFT, constants.ALGORITHM_COLORS)):
+            if i == algorithm_selected_index:
+                pygame.draw.rect(screen, constants.SELECTED_OUTLINE_COLOR, button_area, 3)  # Draw selected outline
+            else:
+                pygame.draw.rect(screen, constants.OUTLINE_COLOR, button_area, 3)  # Draw white outline
+
+            pygame.draw.rect(screen, button_control_color, button_area, border_radius=15)
+
+            text = font.render(constants.BUTTON_ALGORITHMS[i], True, (255, 255, 255))
+
+            text_rect = text.get_rect(
+                midleft=(button_area[0] + button_area[2] + 10, button_area[1] + button_area[3] // 2))
+            screen.blit(text, text_rect)
+
+        pygame.draw.rect(screen, constants.ALGORITHM_COLORS[algorithm_selected_index], button_rect, 3)
+
+        # Draw text area
+        pygame.draw.rect(screen, (30, 30, 30), TEXT_AREA_RECT)
+
+        text = constants.ALGORITHM_DESCRIPTION[algorithm_selected_index]
+        lines = render_text_with_line_breaks(text, small_font, TEXT_AREA_RECT.width - 20)
+        for i, line in enumerate(lines):
+            text_surface = small_font.render(line, True, (255, 255, 255))
+            text_rect = text_surface.get_rect(left=TEXT_AREA_RECT.left + 10,
+                                              top=TEXT_AREA_RECT.top + 110 + i * (small_font.get_height() + 5))
+            screen.blit(text_surface, text_rect)
+
+        # Draw headers
+        screen.blit(algorithm_text_surface, algorithm_text_rect)
+        screen.blit(description_text_surface, description_text_rect)
+
+        draw_line(-270, -1200, 300, screen)
+
+        # Draw link button
+        pygame.draw.rect(screen, (255, 255, 255), button_rect_link)
+        screen.blit(button_text, button_text.get_rect(center=button_rect_link.center))
+
+        pygame.display.flip()
+
+    return constants.BUTTON_ALGORITHMS[algorithm_selected_index]
 
 
 def draw_grid(screen):
@@ -77,14 +201,14 @@ def save_square(row, col, color_index):
     :param color_index: Chosen color
     :return: None
     """
-    for square in squares[:]:  # Iterate over a copy of squares to avoid modifying it while iterating
-        if square['color_index'] == 1 and color_index == 1:  # If the square is red and the new one is also red
-            squares.remove(square)  # Remove the existing red square
-            grid_state[square['row']][square['col']] = False  # Set grid_state to False for the removed red square
-        elif square['color_index'] == 2 and color_index == 2:  # If the square is green and the new one is also green
-            squares.remove(square)  # Remove the existing green square
-            grid_state[square['row']][square['col']] = False  # Set grid_state to False for the removed green square
-    squares.append({'row': row, 'col': col, 'color_index': color_index})  # Add the new square
+    for square in squares[:]:
+        if square['color_index'] == 1 and color_index == 1:
+            squares.remove(square)
+            grid_state[square['row']][square['col']] = False
+        elif square['color_index'] == 2 and color_index == 2:
+            squares.remove(square)
+            grid_state[square['row']][square['col']] = False
+    squares.append({'row': row, 'col': col, 'color_index': color_index})
     grid_state[row][col] = True
 
 
@@ -162,7 +286,6 @@ def load_random_maze(squares, screen, button_colors, grid_state):
         for col in range(len(grid_state[row])):
             grid_state[row][col] = False
 
-    # Reset squares list
     squares.clear()
 
     # Reset board
@@ -204,7 +327,6 @@ def reset(grid_state, squares, screen, button_colors):
         for col in range(len(grid_state[row])):
             grid_state[row][col] = False
 
-    # Reset squares list
     squares.clear()
 
     # Reset all squares back to its original state
@@ -228,17 +350,14 @@ def main():
     global squares, start_simulation_check, simulation_finished
 
     screen = pygame.display.set_mode((constants.WINDOW_WIDTH, constants.WINDOW_HEIGHT))
-    pygame.display.set_caption("DFS and BFS Visualizer")
+    pygame.display.set_caption("Graph Algorithm Visualizer")
     original_background = screen.copy()  # Store the original background
 
-    # Initialize button colors
     button_colors = constants.BUTTON_COLORS.copy()
     button_control_colors = constants.BUTTON_CONTROL_COLORS.copy()
 
-    # Initialize the selected color index
-    selected_color_index = 0  # Default to dark gray
-    selected_color_controls_index = 4  # Default to DFS
-    selected_algorithm = "DFS"  # Default to DFS algorithm
+    selected_color_index = 0
+    selected_algorithm = "No Chosen Algorithm"
 
     running = True
     drawing = False
@@ -263,24 +382,23 @@ def main():
                 for i, button_area in enumerate(constants.BUTTON_AREA):
                     if button_area[0] < mouse_x < button_area[0] + button_area[2] and \
                             button_area[1] < mouse_y < button_area[1] + button_area[3]:
+                        if i < len(constants.BUTTON_FUNCTIONALITY) - 3 and constants.BUTTON_FUNCTIONALITY[i] != f"Select Algorithm ({str(len(constants.BUTTON_ALGORITHMS))})":
+                            selected_color_index = i  # Update the selected color index
+
                         # Checks for if functionality buttons are pressed
-                        if constants.BUTTON_FUNCTIONALITY[i] in ["DFS", "BFS"]:
-                            selected_algorithm = constants.BUTTON_FUNCTIONALITY[i]
-                            selected_color_controls_index = i
+                        if constants.BUTTON_FUNCTIONALITY[i] == f"Select Algorithm ({str(len(constants.BUTTON_ALGORITHMS))})":
+                            selected_algorithm = open_algorithm_menu()
                         elif constants.BUTTON_FUNCTIONALITY[i] == "Random Maze":
                             load_random_maze(squares, screen, button_colors, grid_state)
                         elif constants.BUTTON_FUNCTIONALITY[i] == "Reset":
                             reset(grid_state, squares, screen, button_colors)
-
-                        # Checks for if one of the algorithms and the start simulation button is pressed
-                        if i < len(constants.BUTTON_FUNCTIONALITY) - 3 and constants.BUTTON_FUNCTIONALITY[i] not in ["DFS", "BFS"]:
-                            selected_color_index = i  # Update the selected color index
-                        else:
-                            if constants.BUTTON_FUNCTIONALITY[i] == "Start Simulation" and not start_simulation_check:
-                                if sum(1 for square in squares if square['color_index'] == 1) == 1 and sum(1 for square in squares if square['color_index'] == 2) == 1:
-                                    start_simulation(selected_algorithm, screen, button_colors)
-                                else:
-                                    print("You must place at least one Start and End point")
+                        elif constants.BUTTON_FUNCTIONALITY[i] == "Start Simulation" and not start_simulation_check:
+                            if selected_algorithm == "No Chosen Algorithm":
+                                print("You need to choose an algorithm! Navigate over to \"Select Algorithm\" to choose an option")
+                            elif sum(1 for square in squares if square['color_index'] == 1) == 1 and sum(1 for square in squares if square['color_index'] == 2) == 1:
+                                start_simulation(selected_algorithm, screen, button_colors)
+                            else:
+                                print("You must place at least one Start and End point")
 
                 # Check if the left mouse button is pressed down while over the grid
                 if event.button == 1 and constants.PADDING_X < mouse_x < constants.PADDING_X + constants.GRID_SIZE and \
@@ -288,19 +406,18 @@ def main():
                     drawing = True
                     col = (mouse_x - constants.PADDING_X) // constants.SQUARE_SIZE
                     row = (mouse_y - constants.PADDING_Y) // constants.SQUARE_SIZE
-                    if 0 <= row < constants.ROWS and 0 <= col < constants.COLS and constants.BUTTON_FUNCTIONALITY[selected_color_index] not in ["DFS", "BFS"]:
+                    if 0 <= row < constants.ROWS and 0 <= col < constants.COLS and constants.BUTTON_FUNCTIONALITY[selected_color_index] != f"Select Algorithm ({str(len(constants.BUTTON_ALGORITHMS))})":
                         if constants.BUTTON_FUNCTIONALITY[selected_color_index] == "Erase":
                             squares = [square for square in squares if
                                        not (square['row'] == row and square['col'] == col)]
-                            fill_square(screen, row, col, constants.BACKGROUND_COLOR)  # Fill with background color
+                            fill_square(screen, row, col, constants.BACKGROUND_COLOR)
                             squares.append({'row': row, 'col': col, 'color_index': 4})
                             grid_state[row][col] = False
                         else:
                             if not grid_state[row][col]:
-                                color_index = selected_color_index  # Use the selected color index
-                                fill_square(screen, row, col, button_colors[color_index])
+                                fill_square(screen, row, col, button_colors[selected_color_index])
                                 grid_state[row][col] = True
-                                save_square(row, col, color_index)
+                                save_square(row, col, selected_color_index)
 
             # Checks for if the mouse is released
             elif event.type == pygame.MOUSEBUTTONUP and not start_simulation_check:
@@ -312,22 +429,21 @@ def main():
                         constants.PADDING_Y < mouse_y < constants.PADDING_Y + constants.GRID_SIZE:
                     col = (mouse_x - constants.PADDING_X) // constants.SQUARE_SIZE
                     row = (mouse_y - constants.PADDING_Y) // constants.SQUARE_SIZE
-                    if 0 <= row < constants.ROWS and 0 <= col < constants.COLS and constants.BUTTON_FUNCTIONALITY[selected_color_index] not in ["DFS", "BFS", "Start Simulation"]:
+                    if 0 <= row < constants.ROWS and 0 <= col < constants.COLS and constants.BUTTON_FUNCTIONALITY[selected_color_index] not in [f"Select Algorithm ({str(len(constants.BUTTON_ALGORITHMS))})", "Start Simulation"]:
                         if constants.BUTTON_FUNCTIONALITY[selected_color_index] == "Erase":
                             squares = [square for square in squares if
                                        not (square['row'] == row and square['col'] == col)]
                             grid_state[row][col] = False  # Set the state to False (erase)
-                            fill_square(screen, row, col, constants.BACKGROUND_COLOR)  # Fill with background color
+                            fill_square(screen, row, col, constants.BACKGROUND_COLOR)
                             squares.append({'row': row, 'col': col, 'color_index': 4})
                             grid_state[row][col] = False
                         else:
                             if not grid_state[row][col]:
-                                color_index = selected_color_index  # Use the selected color index
-                                fill_square(screen, row, col, button_colors[color_index])
+                                fill_square(screen, row, col, button_colors[selected_color_index])
                                 grid_state[row][col] = True
-                                save_square(row, col, color_index)
+                                save_square(row, col, selected_color_index)
 
-        screen.blit(original_background, (0, 0))  # Redraw the original background
+        screen.blit(original_background, (0, 0))
         draw_grid(screen)
 
         # Draw filled squares
@@ -338,8 +454,6 @@ def main():
         # Draw buttons with text
         for i, (button_area, button_color, button_control_color) in enumerate(zip(constants.BUTTON_AREA, button_colors, button_control_colors)):
             if i == selected_color_index:
-                pygame.draw.rect(screen, constants.SELECTED_OUTLINE_COLOR, button_area, 3)  # Draw selected outline
-            elif i == selected_color_controls_index:
                 pygame.draw.rect(screen, constants.SELECTED_OUTLINE_COLOR, button_area, 3)  # Draw selected outline
             else:
                 pygame.draw.rect(screen, constants.OUTLINE_COLOR, button_area, 3)  # Draw white outline
@@ -370,7 +484,7 @@ def main():
             screen.blit(chosen_algorithm, text_rect)
 
             algorithm_text = font.render(selected_algorithm, True, (255, 255, 255))
-            text_rect = algorithm_text.get_rect(midleft=(120, constants.WINDOW_HEIGHT // 2 - 60))
+            text_rect = algorithm_text.get_rect(midleft=(55, constants.WINDOW_HEIGHT // 2 - 60))
             screen.blit(algorithm_text, text_rect)
 
             if simulation_finished:

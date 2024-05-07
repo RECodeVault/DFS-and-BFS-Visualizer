@@ -1,6 +1,6 @@
 ﻿# DFS-and-BFS-Visualizer
 
-This program utilizes Depth-First Search (DFS) and Breadth-First Search (BFS) algorithms to efficiently find the shortest route between a start point and an end point. This tool will allow you to create your own custom maze, and watch how the DFS and BFS algorithm finds its way through to the goal.
+This program utilizes many different graph algorithms to efficiently find the shortest route between a start point and an end point. This tool will allow you to create your own custom maze, and watch how the different algorithm finds its way through to the goal.
 
 ## How to Install:
 
@@ -27,12 +27,20 @@ This program utilizes Depth-First Search (DFS) and Breadth-First Search (BFS) al
 ## How to use:
 1. There will be a list of buttons on the right side of the grid. You can choose to create your own maze using three buttons: Walls, Start point, End point, and Erase.
 2. If you do not want to create your own maze, on the left side of the grid you can choose the Random maze button to create a random maze.
-3. Once you have a maze made, you can choose either the BFS or the DFS option.
-4. Once one of them are chosen, click the Start simulation button and watch the magic happen as the algorithm finds its way through the maze.
-5. Once the simulation is finished, you can click the Reset button to try it again.
+3. Once you have a maze made, navigate over to the "Select Algorithm" Option.
+4. Once inside the menu you can choose your desired algorithm here 
+5. Explore around the menu! There are detailed descriptions for all algorithms as well as a helpful button at the bottom to redirect you to an in depth YouTube video!
+6. Once you have your desired algorithm select the "Apply" option to save it!
+7. When one of the algorithms are chosen, click the Start simulation button and watch the magic happen as the algorithm finds its way through the maze.
+8. Once the simulation is finished, you can click the Reset button to try it again.
 
-## Example of running program:
-![Running program](https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExdHg2ZjkwcDloaDNydjBqOG41em0zOWV2Z3p1MHdkMTZkeG5sZHhncyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/johDPMB69vTtQt4O5L/giphy.gif)
+## Examples of running program:
+
+### Setting up the program:
+![Running program](https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExNGljY3M2MXd2ZmRod3ptbmg5ZHNidml6MGVyZDAzdHYxdXJxcDY4NCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/p4Z6LCj6K1KDSmy4Gg/giphy.gif)
+
+### Running Program:
+![Running program](https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExZnF4cDQweng2MzFya2F3eHhnMWJqNndzNjE4aGkzOXlqaXJidTYwbCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/ZrpcB8eh58RVrP52UO/giphy.gif)
 
 # BFS and DFS algorithm:
 
@@ -68,8 +76,17 @@ Breadth-First Search (BFS) is another graph traversal algorithm used to explore 
 
 # Future implementation:
 
-- Going to make it a universal graph algorithm visualizer, some of the algorithms I am going to add are:
+- Adding algorithms like:
 - Dijkstra's algorithm
 - A* algorithm
+- Greedy Best-First Search
+- Bellman-Ford Algorithm
+- Flood Fill Algorithm
 
-- Going to add an option to read more on each of the algorithms, built into the application.
+# Change-log:
+
+- Completely reworked the algorithm choosing process
+- Added new menu (Select Algorithm)
+- Added Description for each algorithm
+- Added a button link at the bottom that redirects to YouTube video on certain algorithm
+- Redesigned button colors
