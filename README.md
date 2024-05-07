@@ -1,17 +1,17 @@
-﻿# DFS-and-BFS-Visualizer
+﻿# Graph-Algorithm-Visualizer
 
-This program utilizes many different graph algorithms to efficiently find the shortest route between a start point and an end point. This tool will allow you to create your own custom maze, and watch how the different algorithm finds its way through to the goal.
+This program utilizes many different graph algorithms to efficiently find the shortest route between a start point and an endpoint. This tool will allow you to create your own custom maze, and watch how the different algorithm finds their way through to the goal.
 
 ## How to Install:
 
 1. **Clone the repository:**
     ```bash
-    git clone https://github.com/RECodeVault/DFS-and-BFS-Visualizer.git
+    git clone https://github.com/RECodeVault/Graph-Algorithm-Visualizer.git
     ```
 
 2. **Navigate to the project directory:**
     ```bash
-    cd DFS-and-BFS-Visualizer
+    cd Graph-Algorithm-Visualizer
     ```
     
 3. **Install dependencies:**
@@ -31,18 +31,18 @@ This program utilizes many different graph algorithms to efficiently find the sh
 4. Once inside the menu you can choose your desired algorithm here 
 5. Explore around the menu! There are detailed descriptions for all algorithms as well as a helpful button at the bottom to redirect you to an in depth YouTube video!
 6. Once you have your desired algorithm select the "Apply" option to save it!
-7. When one of the algorithms are chosen, click the Start simulation button and watch the magic happen as the algorithm finds its way through the maze.
+7. When one of the algorithms is chosen, click the Start simulation button and watch the magic happen as the algorithm finds its way through the maze.
 8. Once the simulation is finished, you can click the Reset button to try it again.
 
 ## Examples of running program:
 
 ### Setting up the program:
-![Running program](https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExNGljY3M2MXd2ZmRod3ptbmg5ZHNidml6MGVyZDAzdHYxdXJxcDY4NCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/p4Z6LCj6K1KDSmy4Gg/giphy.gif)
+![Setting up program](https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExNGljY3M2MXd2ZmRod3ptbmg5ZHNidml6MGVyZDAzdHYxdXJxcDY4NCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/p4Z6LCj6K1KDSmy4Gg/giphy.gif)
 
 ### Running Program:
 ![Running program](https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExZnF4cDQweng2MzFya2F3eHhnMWJqNndzNjE4aGkzOXlqaXJidTYwbCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/ZrpcB8eh58RVrP52UO/giphy.gif)
 
-# BFS and DFS algorithm:
+# Algorithms implemented:
 
 ## What is DFS?
 
@@ -85,8 +85,8 @@ Breadth-First Search (BFS) is another graph traversal algorithm used to explore 
 
 # Change-log:
 
-- Completely reworked the algorithm choosing process
+- Completely reworked the algorithm-choosing process
 - Added new menu (Select Algorithm)
 - Added Description for each algorithm
-- Added a button link at the bottom that redirects to YouTube video on certain algorithm
+- Added a button link at the bottom that redirects to a YouTube video on the certain algorithm
 - Redesigned button colors
