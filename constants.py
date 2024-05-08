@@ -38,17 +38,17 @@ BUTTON_AREA[7] = (PADDING_X + BUTTON_PADDING - 250,
 # Buttons for algorithm menu
 BUTTON_AREA_LEFT = [
     (50, 100 + 10 + i * (50 + 10),
-     50, 50) for i in range(2)
+     50, 50) for i in range(5)
 ]
 
-ALGORITHM_COLORS = [(255, 0, 0), (255, 165, 0)]
+ALGORITHM_COLORS = [(255, 0, 0), (255, 165, 0), (0, 255, 0), (255, 105, 180), (128, 0, 128), (128, 0, 0), (0, 0, 255)]
 
-BUTTON_COLORS = [(100, 100, 100), (255, 0, 0), (0, 255, 0), (255, 105, 180), (0, 0, 0), (255, 255, 255), (255, 255, 255),
+BUTTON_COLORS = [(100, 100, 100), (255, 0, 0), (0, 255, 0), (255, 105, 180), (0, 0, 0), (255, 255, 255), (255, 255, 0),
                  (255, 255, 255), (255, 255, 255)]
 BUTTON_CONTROL_COLORS = [(255, 255, 255), (255, 255, 255), (255, 255, 255), (255, 255, 255), (128, 0, 128),
                           (255, 165, 0), (0, 0, 255), (128, 0, 0)]
 
-BUTTON_ALGORITHMS = ["DFS", "BFS"]
+BUTTON_ALGORITHMS = ["DFS", "BFS", "Dijkstra", "A*", "Greedy BFS"]
 
 BUTTON_FUNCTIONALITY = ["Walls", "Start Point", "End Point", "Erase", f"Select Algorithm ({str(len(BUTTON_ALGORITHMS))})", "Start Simulation", "Random Maze", "Reset"]
 
@@ -66,5 +66,30 @@ ALGORITHM_DESCRIPTION = [
     Unlike Depth First Search (DFS), which explores as far as possible along each branch before backtracking,
     BFS explores all the neighboring nodes at the current depth before moving on to the nodes at the next depth level. 
     (Click the button below to see a detailed example!)
+    """,
+    # Dijkstra
+    """
+    Dijkstra's algorithm is a fundamental method in computer science used to find the shortest path between nodes in a graph.
+    This algorithm efficiently calculates the shortest path from a starting node to all other nodes in a graph. 
+    It works by iteratively exploring nodes in the graph, greedily selecting the node with the shortest known distance 
+    from the starting node at each step. Through this process, it gradually builds a shortest-path tree rooted at the 
+    starting node, ultimately yielding the shortest paths to all other nodes. (Click the button below to see a detailed example!)
+    """,
+    # A*
+    """
+    A* is guided by a heuristic function (h(n)) that estimates the cost of reaching the goal from any given node. 
+    The quality of this heuristic significantly affects the efficiency and accuracy of A*. A* is guaranteed to find the 
+    shortest path. Overall, A* is efficient and effective for finding optimal paths in many scenarios, 
+    although its performance can vary depending on factors like the size and complexity 
+    of the graph and the quality of the heuristic function. (Click the button below to see a detailed example!)
+    """,
+    # Greedy Best-First-Search
+    """
+    Greedy Best-First Search (GBFS) employs a heuristic-based approach to guide its search process. 
+    Specifically, it utilizes a Euclidean heuristic, which estimates the distance between a current state 
+    and the goal state in terms of straight-line distance. 
+    This heuristic serves as the basis for the evaluation function, informing GBFS about the proximity of each node to the goal. 
+    By prioritizing nodes based on this heuristic evaluation, GBFS tends to explore paths that appear to be closer to the goal 
+    state in terms of straight-line distance. (Click the button below to see a detailed example!)
     """
 ]

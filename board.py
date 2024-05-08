@@ -50,5 +50,5 @@ class Board:
 
         for row in range(rows):
             for col in range(cols):
-                if visited[row][col]:
+                if visited[row][col] and self.board[row][col] not in ["S", "E"]:
                     self.board[row][col] = "V"

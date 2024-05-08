@@ -1,13 +1,13 @@
 import pygame
 import sys
-
-import constants
-from l_algorithms import dfs, bfs
-from board import Board
 import time
-from mazes import mazes
 import random
 import webbrowser
+
+import constants
+from l_algorithms import dfs, bfs, dijkstra, a_star, greedy_bfs
+from board import Board
+from mazes import mazes
 
 pygame.init()
 
@@ -17,12 +17,10 @@ grid_state = [[False for _ in range(constants.COLS)] for _ in range(constants.RO
 # List to store square properties
 squares = [{'row': row, 'col': col, 'color_index': 4} for row in range(constants.ROWS) for col in range(constants.COLS)]
 
-font = pygame.font.SysFont(None, 30)
-
-small_font = pygame.font.Font(None, 25)
+font = pygame.font.Font(r"assets/Inter-Medium.ttf", 20)
+small_font = pygame.font.Font(r"assets/OpenSans-Medium.ttf", 18)
 
 start_simulation_check = False
-
 simulation_finished = False
 
 dist = 0
@@ -68,16 +66,14 @@ def open_algorithm_menu():
 
     pygame.draw.line(screen, (255, 255, 255), (constants.WINDOW_WIDTH // 2, 0), (constants.WINDOW_WIDTH // 2, constants.WINDOW_HEIGHT), 2)
 
-    TEXT_AREA_RECT = pygame.Rect(constants.WINDOW_WIDTH // 2, 0, constants.WINDOW_WIDTH // 2, constants.WINDOW_HEIGHT)
+    text_area_rect = pygame.Rect(constants.WINDOW_WIDTH // 2, 0, constants.WINDOW_WIDTH // 2, constants.WINDOW_HEIGHT)
 
-    # Create text surfaces for "Algorithm:" and "Description:"
     algorithm_text_surface = font.render("Select An Algorithm:", True, (255, 255, 255))
     description_text_surface = font.render("Description:", True, (255, 255, 255))
 
     algorithm_text_rect = algorithm_text_surface.get_rect(midtop=(constants.WINDOW_WIDTH // 4, 30))
     description_text_rect = description_text_surface.get_rect(midtop=(3 * constants.WINDOW_WIDTH // 4, 30))
 
-    # Link Button
     button_rect_link = pygame.Rect(constants.WINDOW_WIDTH - 450, constants.WINDOW_HEIGHT - 100, 300, 50)
 
     pygame.display.flip()
@@ -107,6 +103,12 @@ def open_algorithm_menu():
                         webbrowser.open("https://www.youtube.com/watch?v=Urx87-NMm6c")
                     elif algorithm_selected_index == 1:
                         webbrowser.open("https://www.youtube.com/watch?v=HZ5YTanv5QE")
+                    elif algorithm_selected_index == 2:
+                        webbrowser.open("https://www.youtube.com/watch?v=EFg3u_E6eHU&t=426s")
+                    elif algorithm_selected_index == 3:
+                        webbrowser.open("https://www.youtube.com/watch?v=71CEj4gKDnE")
+                    elif algorithm_selected_index == 4:
+                        webbrowser.open("https://www.youtube.com/watch?v=dv1m3L6QXWs")
 
         # Draw buttons
         for i, (button_area, button_control_color) in enumerate(zip(constants.BUTTON_AREA_LEFT, constants.ALGORITHM_COLORS)):
@@ -126,14 +128,14 @@ def open_algorithm_menu():
         pygame.draw.rect(screen, constants.ALGORITHM_COLORS[algorithm_selected_index], button_rect, 3)
 
         # Draw text area
-        pygame.draw.rect(screen, (30, 30, 30), TEXT_AREA_RECT)
+        pygame.draw.rect(screen, (30, 30, 30), text_area_rect)
 
         text = constants.ALGORITHM_DESCRIPTION[algorithm_selected_index]
-        lines = render_text_with_line_breaks(text, small_font, TEXT_AREA_RECT.width - 20)
+        lines = render_text_with_line_breaks(text, small_font, text_area_rect.width - 20)
         for i, line in enumerate(lines):
             text_surface = small_font.render(line, True, (255, 255, 255))
-            text_rect = text_surface.get_rect(left=TEXT_AREA_RECT.left + 10,
-                                              top=TEXT_AREA_RECT.top + 110 + i * (small_font.get_height() + 5))
+            text_rect = text_surface.get_rect(left=text_area_rect.left + 10,
+                                              top=text_area_rect.top + 110 + i * (small_font.get_height() + 5))
             screen.blit(text_surface, text_rect)
 
         # Draw headers
@@ -208,11 +210,12 @@ def save_square(row, col, color_index):
         elif square['color_index'] == 2 and color_index == 2:
             squares.remove(square)
             grid_state[square['row']][square['col']] = False
+
     squares.append({'row': row, 'col': col, 'color_index': color_index})
     grid_state[row][col] = True
 
 
-def simulate_moves(updated_board, simulation_queue, screen, button_colors):
+def simulate_moves(updated_board, simulation_queue, shortest_path, screen, button_colors):
     """
     Simulates the moves made by the algorithm, and displays it to the screen
     :param updated_board: Board containing the ascii representation of start_point, end_point and walls
@@ -242,8 +245,20 @@ def simulate_moves(updated_board, simulation_queue, screen, button_colors):
                     screen.blit(moves_text, text_rect)
                     fill_square(screen, square['row'], square['col'], button_colors[square['color_index']])
                     draw_grid(screen)
-                    time.sleep(0.2)
+                    time.sleep(0.1)
                     pygame.display.flip()
+
+    # Shows shortest path
+    for pos in shortest_path[1:]:
+        for square in squares:
+            if square['row'] == pos[0] and square['col'] == pos[1] and square['color_index'] != 1 and square['color_index'] != 2:
+                square['color_index'] = 6
+                break
+
+        fill_square(screen, pos[0], pos[1], button_colors[6])
+        draw_grid(screen)
+        time.sleep(0.1)
+        pygame.display.flip()
 
 
 # Starts simulation function
@@ -263,12 +278,18 @@ def start_simulation(chosen_algorithm, screen, button_colors):
     grid = board.get_board()
 
     if chosen_algorithm == "BFS":
-        simulation_queue, new_board, dist = bfs(grid, start_point, end_point, squares)
-    else:
-        simulation_queue, new_board, dist = dfs(grid, start_point, end_point, squares)
+        simulation_queue, new_board, dist, shortest_path = bfs(grid, start_point, end_point, squares)
+    elif chosen_algorithm == "DFS":
+        simulation_queue, new_board, dist, shortest_path = dfs(grid, start_point, end_point, squares)
+    elif chosen_algorithm == "Dijkstra":
+        simulation_queue, new_board, dist, shortest_path = dijkstra(grid, start_point, end_point, squares)
+    elif chosen_algorithm == "A*":
+        simulation_queue, new_board, dist, shortest_path = a_star(grid, start_point, end_point, squares)
+    elif chosen_algorithm == "Greedy BFS":
+        simulation_queue, new_board, dist, shortest_path = greedy_bfs(grid, start_point, end_point, squares)
 
     updated_board = new_board.get_board()
-    simulate_moves(updated_board, simulation_queue, screen, button_colors)
+    simulate_moves(updated_board, simulation_queue, shortest_path, screen, button_colors)
     simulation_finished = True
 
 
@@ -351,7 +372,7 @@ def main():
 
     screen = pygame.display.set_mode((constants.WINDOW_WIDTH, constants.WINDOW_HEIGHT))
     pygame.display.set_caption("Graph Algorithm Visualizer")
-    original_background = screen.copy()  # Store the original background
+    original_background = screen.copy()
 
     button_colors = constants.BUTTON_COLORS.copy()
     button_control_colors = constants.BUTTON_CONTROL_COLORS.copy()
@@ -383,7 +404,7 @@ def main():
                     if button_area[0] < mouse_x < button_area[0] + button_area[2] and \
                             button_area[1] < mouse_y < button_area[1] + button_area[3]:
                         if i < len(constants.BUTTON_FUNCTIONALITY) - 3 and constants.BUTTON_FUNCTIONALITY[i] != f"Select Algorithm ({str(len(constants.BUTTON_ALGORITHMS))})":
-                            selected_color_index = i  # Update the selected color index
+                            selected_color_index = i
 
                         # Checks for if functionality buttons are pressed
                         if constants.BUTTON_FUNCTIONALITY[i] == f"Select Algorithm ({str(len(constants.BUTTON_ALGORITHMS))})":
