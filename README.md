@@ -83,6 +83,8 @@ Breadth-First Search (BFS) is another graph traversal algorithm used to explore 
 - Bellman-Ford Algorithm
 - Flood Fill Algorithm
 
+- Adding a visual of the final fastest route
+
 # Change-log:
 
 - Completely reworked the algorithm-choosing process
