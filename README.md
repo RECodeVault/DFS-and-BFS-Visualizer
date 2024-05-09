@@ -37,10 +37,12 @@ This program utilizes many different graph algorithms to efficiently find the sh
 ## Examples of running program:
 
 ### Setting up the program:
-![Setting up program](https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExNGljY3M2MXd2ZmRod3ptbmg5ZHNidml6MGVyZDAzdHYxdXJxcDY4NCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/p4Z6LCj6K1KDSmy4Gg/giphy.gif)
+![Setting up program](https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExMnFjdzNqbjhkazkxYXFiOWhmMzhlODUwNzJ4cTY2Y2hydHR1bnhtZyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/vqvOJdiCbm0pBMcK2y/giphy.gif)
 
 ### Running Program:
-![Running program](https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExZnF4cDQweng2MzFya2F3eHhnMWJqNndzNjE4aGkzOXlqaXJidTYwbCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/ZrpcB8eh58RVrP52UO/giphy.gif)
+![Running program(A*)](https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExaXpkeHQ4ZnBvcjBvMXd2Y3luOXZsa2hsbnlqeGt3czNvZ2E4bXp0NiZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/4povkk8QqNAWwZerEV/giphy.gif)
+
+![Running program(Dijkstra)](https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExbHI2OGgyajAxNmNuNTYyaGp6d2l3a3RieXp3cnVlbXhzYXBnbDZxdiZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/kR2bJJjb2AnGA2CPck/giphy.gif)
 
 # Algorithms implemented:
 
@@ -48,47 +50,59 @@ This program utilizes many different graph algorithms to efficiently find the sh
 
 Depth-First Search (DFS) is a graph traversal algorithm used to explore and analyze graphs or trees. It starts at a designated "root" node and explores as far as possible along each branch before backtracking.
 
-### Steps of DFS:
-
-1. DFS begins at a selected starting node.
-2. It explores as far as possible along each branch before backtracking.
-3. If a dead end is reached or all adjacent nodes have been visited, it backtracks to the most recent node with unexplored options.
-4. DFS traverses the entire graph, ensuring that all reachable nodes are visited.
-
 ### Example of DFS:
 ![DFS diagram](https://www.interviewbit.com/blog/wp-content/uploads/2021/12/DFS-Algorithm-800x620.png)
-
 
 ## What is BFS?
 
 Breadth-First Search (BFS) is another graph traversal algorithm used to explore and analyze graphs or trees. Unlike DFS, which explores as far as possible along each branch before backtracking, BFS explores all nodes at the current depth before moving to the next level.
 
-### Steps of BFS:
-
-1. BFS begins at a selected starting node.
-2. It explores all neighbor nodes at the current depth level before moving to the next depth level.
-3. BFS systematically explores nodes level by level, ensuring that nodes closer to the starting point are visited first.
-4. BFS typically uses a queue data structure to keep track of the nodes to be explored, ensuring that nodes are visited in the order they were discovered.
-5. BFS traverses the entire graph, ensuring that all reachable nodes are visited.
-
 ### Example of BFS:
 ![BFS diagram](https://cdn.hackr.io/uploads/posts/attachments/41Y3Tl3kaPqGDVBPKFjJ1dYYrA33iss48iMklm7h.png)
+
+## What is dijkstra's Algorithm?
+
+Dijkstra's algorithm is a fundamental method in computer science used to find the shortest path between nodes in a graph.
+This algorithm efficiently calculates the shortest path from a starting node to all other nodes in a graph. 
+It works by iteratively exploring nodes in the graph, greedily selecting the node with the shortest known distance 
+from the starting node at each step. Through this process, it gradually builds a shortest-path tree rooted at the 
+starting node, ultimately yielding the shortest paths to all other nodes.
+
+### Example of dijkstra's Algorithm:
+![Dijkstra's algorithm diagram](https://www.researchgate.net/profile/Atta-Ur-Rehman-6/publication/331484960/figure/fig1/AS:732550733512704@1551665113143/Illustration-of-Dijkstras-algorithm.ppm)
+
+## What is A*?
+
+A* is guided by a heuristic function (h(n)) that estimates the cost of reaching the goal from any given node. 
+The quality of this heuristic significantly affects the efficiency and accuracy of A*. A* is guaranteed to find the 
+shortest path. Overall, A* is efficient and effective for finding optimal paths in many scenarios, 
+although its performance can vary depending on factors like the size and complexity 
+of the graph and the quality of the heuristic function.
+
+### Example of A*:
+![A* diagram](https://www.101computing.net/wp/wp-content/uploads/A-Star-Search-Algorithm.png)
+
+## What is Greedy Best-First-Search?
+
+Greedy Best-First Search (GBFS) employs a heuristic-based approach to guide its search process. 
+Specifically, it utilizes a Euclidean heuristic, which estimates the distance between a current state 
+and the goal state in terms of straight-line distance. 
+This heuristic serves as the basis for the evaluation function, informing GBFS about the proximity of each node to the goal. 
+By prioritizing nodes based on this heuristic evaluation, GBFS tends to explore paths that appear to be closer to the goal 
+state in terms of straight-line distance.
+
+### Example of Greedy Best-First-Search:
+![Greedy Best-First-Search diagram](https://raw.githubusercontent.com/Codecademy/docs/main/media/greedy-best-first-search-tree-3.png)
 
 # Future implementation:
 
 - Adding algorithms like:
-- Dijkstra's algorithm
-- A* algorithm
-- Greedy Best-First Search
 - Bellman-Ford Algorithm
 - Flood Fill Algorithm
 
-- Adding a visual of the final fastest route
-
 # Change-log:
 
-- Completely reworked the algorithm-choosing process
-- Added new menu (Select Algorithm)
-- Added Description for each algorithm
-- Added a button link at the bottom that redirects to a YouTube video on the certain algorithm
-- Redesigned button colors
+- Added 3 new algorithms
+- Added shortest path visual
+- Bug fixes
+- Updated font style
