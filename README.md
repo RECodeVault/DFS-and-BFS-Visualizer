@@ -69,7 +69,7 @@ from the starting node at each step. Through this process, it gradually builds a
 starting node, ultimately yielding the shortest paths to all other nodes.
 
 ### Example of dijkstra's Algorithm:
-![Dijkstra's algorithm diagram](https://www.researchgate.net/profile/Atta-Ur-Rehman-6/publication/331484960/figure/fig1/AS:732550733512704@1551665113143/Illustration-of-Dijkstras-algorithm.ppm)
+![Dijkstra's algorithm diagram](https://storage.googleapis.com/algodailyrandomassets/curriculum/graphs/dijkstras/second-step.png)
 
 ## What is A*?
 
